@@ -50,7 +50,9 @@ public class DomToJsonAdaptor implements DischargeSummaryReader<String> {
 	@Override
 	public String readDocument(final InputStream in) throws IOException {
 		final Document document = delegate.readDocument(in);
-		return interpretDocument(document).toString();
+		final JSONObject json = interpretDocument(document);
+		LOGGER.trace("json: {}", json);
+		return json.toString();
 	}
 	
 	private JSONObject interpretDocument(final Document document) throws IOException {
@@ -102,7 +104,8 @@ public class DomToJsonAdaptor implements DischargeSummaryReader<String> {
 		 * @throws IOException If no properties could be extracted from the document
 		 */
 		public JSONObject extractProperties(final Document document) throws IOException {
-			final Map<String, String> properties = Maps.newLinkedHashMap();
+			// Declared as string->object for correct linking of JSONObject constructor
+			final Map<String, Object> properties = Maps.newLinkedHashMap();
 			final String textContent = getTextContent(document);
 			
 			for (final Key key: keys) {
@@ -115,6 +118,7 @@ public class DomToJsonAdaptor implements DischargeSummaryReader<String> {
 			if (properties.isEmpty()) {
 				throw new IOException("No matching properties could be found");
 			}
+			LOGGER.trace("properties: {}", properties);
 			return new JSONObject(properties);
 		}
 		
