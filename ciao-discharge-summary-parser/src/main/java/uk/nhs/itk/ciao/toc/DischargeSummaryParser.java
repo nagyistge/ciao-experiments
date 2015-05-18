@@ -13,8 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.tika.parser.pdf.PDFParser;
-import org.apache.tika.parser.pdf.PDFParserConfig;
+import org.apache.tika.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,11 +118,8 @@ public class DischargeSummaryParser implements Runnable {
 		outputFolder.mkdirs();
 		Preconditions.checkState(outputFolder.isDirectory());
 		
-		final PDFParser pdfParser = new PDFParser();
-		final PDFParserConfig parserConfig = pdfParser.getPDFParserConfig();
-		parserConfig.setSortByPosition(true);
-		
-		 this.reader = DomToJsonAdaptor.adapt(new TikaDischargeSummaryReader(pdfParser));
+		final Parser parser = TikaParserFactory.createParser();		
+		 this.reader = DomToJsonAdaptor.adapt(new TikaDischargeSummaryReader(parser));
 	}
 	
 	/**
