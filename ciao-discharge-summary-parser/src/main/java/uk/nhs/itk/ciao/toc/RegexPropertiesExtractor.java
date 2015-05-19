@@ -189,6 +189,16 @@ public class RegexPropertiesExtractor implements PropertiesExtractor<Document> {
 			return this;
 		}
 		
+		// bean setter for spring
+		public void setStartLiteral(final String startLiteral) {
+			this.startLiteral = startLiteral;
+		}
+		
+		// bean setter for spring
+		public void setEndLiteral(final String endLiteral) {
+			this.endLiteral = endLiteral;
+		}
+		
 		public RegexPropertyFinder build() {
 			final String suffix = endLiteral == null ? "" :
 				Pattern.quote(endLiteral);

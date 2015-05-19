@@ -17,7 +17,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.google.common.base.Preconditions;
 
@@ -28,15 +29,19 @@ public class DischargeSummaryParser implements Runnable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DischargeSummaryParser.class);
 	
 	public static void main(final String[] args) {
+		final ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("/spring/beans.xml");
+		
 		try {
 			if (args.length < 2) {
-				runGuiApp();
+				runGuiApp(applicationContext);
 			} else {
-				runConsoleApp(args);
+				runConsoleApp(applicationContext, args);
 			}
 		} catch (Throwable e) {
 			LOGGER.error("Exception while running parser", e);
 			System.exit(-1);
+		} finally {
+			applicationContext.close();
 		}
 	}
 	
@@ -44,18 +49,18 @@ public class DischargeSummaryParser implements Runnable {
 	 * Runs the parser in console mode - the first two arguments are the 
 	 * inputFolder and the outputFolder
 	 */
-	private static void runConsoleApp(final String[] args) throws Exception {
+	private static void runConsoleApp(final ApplicationContext applicationContext, final String[] args) throws Exception {
 		final File inputFolder = new File(args[0]);
 		final File outputFolder = new File(args[1]);
 		final Listener listener = new Listener();
-		new DischargeSummaryParser(listener, inputFolder, outputFolder).run();
+		new DischargeSummaryParser(applicationContext, listener, inputFolder, outputFolder).run();
 	}
 	
 	/**
 	 * Runs the parser in GUI mode - the inputFolder and outputFolder are determined
 	 * via GUI file choosers
 	 */
-	private static void runGuiApp() throws Exception {
+	private static void runGuiApp(final ApplicationContext applicationContext) throws Exception {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		
 		final JFileChooser chooser = new JFileChooser();
@@ -86,7 +91,7 @@ public class DischargeSummaryParser implements Runnable {
 				JOptionPane.showMessageDialog(null, message);
 			}
 		};
-		new DischargeSummaryParser(listener, inputFolder, outputFolder).run();
+		new DischargeSummaryParser(applicationContext, listener, inputFolder, outputFolder).run();
 	}
 	
 	/**
@@ -110,8 +115,8 @@ public class DischargeSummaryParser implements Runnable {
 	private final File outputFolder;
 	private final DocumentParser documentParser;
 	
-	public DischargeSummaryParser(final Listener listener, final File inputFolder,
-			final File outputFolder) throws ParserConfigurationException {
+	public DischargeSummaryParser(final ApplicationContext applicationContext, final Listener listener,
+			final File inputFolder, final File outputFolder) throws ParserConfigurationException {
 		this.listener = Preconditions.checkNotNull(listener);
 		this.inputFolder = Preconditions.checkNotNull(inputFolder);
 		this.outputFolder = Preconditions.checkNotNull(outputFolder);
@@ -120,11 +125,7 @@ public class DischargeSummaryParser implements Runnable {
 		outputFolder.mkdirs();
 		Preconditions.checkState(outputFolder.isDirectory());
 		
-		final MultiPropertiesExtractor<Document> propertiesExtractor = new MultiPropertiesExtractor<Document>();
-		propertiesExtractor.addExtractor(PropertiesExtractorFactory.createDischargeNotificationExtractor());
-		propertiesExtractor.addExtractor(PropertiesExtractorFactory.createEDDischargeExtractor());
-
-		documentParser = new TikaDocumentParser(TikaParserFactory.createParser(), propertiesExtractor);
+		documentParser = applicationContext.getBean("documentParser", DocumentParser.class);
 	}
 	
 	/**

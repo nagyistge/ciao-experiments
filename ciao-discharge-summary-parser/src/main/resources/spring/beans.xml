@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="DischargeNotificationPropertiesExtractor" class="uk.nhs.itk.ciao.toc.PropertiesExtractorFactory" factory-method="createDischargeNotificationExtractor" />
+	<bean id="EDDischargePropertiesExtractor" class="uk.nhs.itk.ciao.toc.PropertiesExtractorFactory" factory-method="createEDDischargeExtractor" />
+	
+	<bean id="documentParser" class="uk.nhs.itk.ciao.toc.TikaDocumentParser">
+		<constructor-arg>
+			<bean class="uk.nhs.itk.ciao.toc.TikaParserFactory" factory-method="createParser" />
+		</constructor-arg>
+		<constructor-arg>
+			<bean class="uk.nhs.itk.ciao.toc.MultiPropertiesExtractor">
+				<constructor-arg>
+					<array>
+						<ref bean="DischargeNotificationPropertiesExtractor"/>
+						<ref bean="EDDischargePropertiesExtractor"/>
+					</array>
+				</constructor-arg>
+			</bean>			
+		</constructor-arg>
+	</bean>
+	
+</beans>
