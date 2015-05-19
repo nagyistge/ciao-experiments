@@ -7,15 +7,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.util.Map;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.tika.parser.Parser;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
 import com.google.common.base.Preconditions;
 
@@ -106,7 +108,7 @@ public class DischargeSummaryParser implements Runnable {
 	private final Listener listener;
 	private final File inputFolder;
 	private final File outputFolder;
-	private DischargeSummaryReader<String> reader;
+	private final DocumentParser documentParser;
 	
 	public DischargeSummaryParser(final Listener listener, final File inputFolder,
 			final File outputFolder) throws ParserConfigurationException {
@@ -118,8 +120,11 @@ public class DischargeSummaryParser implements Runnable {
 		outputFolder.mkdirs();
 		Preconditions.checkState(outputFolder.isDirectory());
 		
-		final Parser parser = TikaParserFactory.createParser();		
-		 this.reader = DomToJsonAdaptor.adapt(new TikaDischargeSummaryReader(parser));
+		final MultiPropertiesExtractor<Document> propertiesExtractor = new MultiPropertiesExtractor<Document>();
+		propertiesExtractor.addExtractor(PropertiesExtractorFactory.createDischargeNotificationExtractor());
+		propertiesExtractor.addExtractor(PropertiesExtractorFactory.createEDDischargeExtractor());
+
+		documentParser = new TikaDocumentParser(TikaParserFactory.createParser(), propertiesExtractor);
 	}
 	
 	/**
@@ -153,18 +158,20 @@ public class DischargeSummaryParser implements Runnable {
 		Writer writer = null;
 		try {			
 			in = new FileInputStream(file);
-			final String outputText = reader.readDocument(in);
+			final Map<String, Object> properties = documentParser.parseDocument(in);
 
 			final String filename = getBaseName(file) + ".txt";
 			final File outputFile = new File(outputFolder, filename);				
 			try {					
 				writer = new FileWriter(outputFile);
-				writer.write(outputText);
+				writer.write(new JSONObject(properties).toString());
 				writer.flush();
 				parsedFile = true;
 			} catch (IOException e) {
 				LOGGER.warn("Unable to write to output file {}", outputFile);
 			}				
+		} catch (UnsupportedDocumentTypeException e) {
+			LOGGER.warn("Unsupported document type: {}", file, e);
 		} catch (IOException e) {
 			LOGGER.warn("Unable to parse file: {}", file, e);
 		} finally {

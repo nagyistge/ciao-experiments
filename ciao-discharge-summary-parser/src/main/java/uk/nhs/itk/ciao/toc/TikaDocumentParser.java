@@ -33,23 +33,33 @@ import com.google.common.collect.Maps;
 /**
  * A {@link DischargeSummaryReader} backed by Apache Tika.
  * <p>
- * The documents are parsed by Tika (using the configured parser) and
- * converted to an XHTML DOM representation.
+ * The documents are first parsed by Tika (using the configured parser) and
+ * converted to an XHTML DOM representation. Next a map of key/value properties
+ * are extracted from the dom and returned.
  * <p>
- * Whitespace text nodes are normalized in the returned document
+ * Whitespace text nodes are normalized in the intermediate document
  */
-public class TikaDischargeSummaryReader implements DischargeSummaryReader<Document> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(TikaDischargeSummaryReader.class);
+public class TikaDocumentParser implements DocumentParser {
+	private static final Logger LOGGER = LoggerFactory.getLogger(TikaDocumentParser.class);
 	private final Parser parser;
+	private final PropertiesExtractor<Document> propertiesExtractor;
 	private final DocumentBuilder documentBuilder;
 	
-	public TikaDischargeSummaryReader(final Parser parser) throws ParserConfigurationException {
+	public TikaDocumentParser(final Parser parser, final PropertiesExtractor<Document> propertiesExtractor)
+			throws ParserConfigurationException {
 		this.parser = Preconditions.checkNotNull(parser);
+		this.propertiesExtractor = Preconditions.checkNotNull(propertiesExtractor);
 		this.documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 	}
 	
 	@Override
-	public Document readDocument(final InputStream in) throws IOException {
+	public Map<String, Object> parseDocument(final InputStream in)
+			throws UnsupportedDocumentTypeException, IOException {
+		final Document document = convertToDom(in);
+		return propertiesExtractor.extractProperties(document);
+	}
+
+	private Document convertToDom(final InputStream in) throws IOException {
 		final DocumentContentHandler handler = new DocumentContentHandler();
 		
 		try {
@@ -62,6 +72,11 @@ public class TikaDischargeSummaryReader implements DischargeSummaryReader<Docume
 		}
 	}
 	
+	/**
+	 * SAX content handler to convert the content to a DOM and
+	 * normalize any whitespace nodes
+	 *
+	 */
 	private class DocumentContentHandler implements ContentHandler {
 		final Metadata metadata = new Metadata();
 		final ParseContext context = new ParseContext();
