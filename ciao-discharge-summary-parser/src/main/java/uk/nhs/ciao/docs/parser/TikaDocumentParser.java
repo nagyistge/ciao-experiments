@@ -1,4 +1,4 @@
-package uk.nhs.itk.ciao.toc;
+package uk.nhs.ciao.docs.parser;
 
 import java.io.IOException;
 import java.io.InputStream;

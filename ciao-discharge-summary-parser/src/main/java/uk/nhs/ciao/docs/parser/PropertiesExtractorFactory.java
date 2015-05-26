@@ -1,6 +1,6 @@
-package uk.nhs.itk.ciao.toc;
+package uk.nhs.ciao.docs.parser;
 
-import static uk.nhs.itk.ciao.toc.RegexPropertiesExtractor.*;
+import static uk.nhs.ciao.docs.parser.RegexPropertiesExtractor.*;
 
 public class PropertiesExtractorFactory {
 	private PropertiesExtractorFactory() {

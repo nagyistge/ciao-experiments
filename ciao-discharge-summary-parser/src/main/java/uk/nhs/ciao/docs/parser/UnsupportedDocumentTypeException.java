@@ -1,4 +1,4 @@
-package uk.nhs.itk.ciao.toc;
+package uk.nhs.ciao.docs.parser;
 
 /**
  * Indicates that the type of a document does not match

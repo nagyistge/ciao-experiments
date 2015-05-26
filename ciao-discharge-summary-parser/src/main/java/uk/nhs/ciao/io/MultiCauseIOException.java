@@ -1,4 +1,4 @@
-package uk.nhs.itk.ciao.io;
+package uk.nhs.ciao.io;
 
 import java.io.IOException;
 import java.util.Collections;

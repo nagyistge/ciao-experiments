@@ -1,4 +1,4 @@
-package uk.nhs.itk.ciao.toc;
+package uk.nhs.ciao.docs.parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.nhs.itk.ciao.io.MultiCauseIOException;
+import uk.nhs.ciao.io.MultiCauseIOException;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;

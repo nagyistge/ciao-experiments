@@ -111,7 +111,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>uk.nhs.itk.ciao.toc.DischargeSummaryParser</mainClass>
+							<mainClass>uk.nhs.ciao.docs.parser.DischargeSummaryParser</mainClass>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
 						</manifest>
