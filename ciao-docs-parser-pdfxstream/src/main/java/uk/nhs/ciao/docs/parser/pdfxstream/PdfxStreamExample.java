@@ -7,7 +7,6 @@ import java.util.Arrays;
 import com.google.common.io.Closeables;
 import com.snowtide.PDF;
 import com.snowtide.pdf.Document;
-import com.snowtide.pdf.OutputHandler;
 import com.snowtide.pdf.OutputTarget;
 import com.snowtide.pdf.Page;
 import com.snowtide.pdf.util.TableUtils;
