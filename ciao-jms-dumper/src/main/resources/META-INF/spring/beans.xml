@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+    
+	<!-- Make config properties available to both spring and camel -->	
+	<bean id="bridgePropertyPlaceholder" class="org.apache.camel.spring.spi.BridgePropertyPlaceholderConfigurer">
+	   <property name="properties" ref="ciaoProperties" />
+	</bean>
+
+	<bean id="jms" class="org.apache.activemq.camel.component.ActiveMQComponent">
+      <property name="brokerURL" value="tcp://localhost:61616" />        
+	  <property name="userName" value="smx" />
+	  <property name="password" value="smx" />
+   </bean>
+    
+	<camelContext xmlns="http://camel.apache.org/schema/spring" id="camel" trace="true" streamCache="true">
+		<properties>
+			<property key="CamelLogDebugStreams" value="true" />
+		</properties>
+		
+		<package>uk.nhs.ciao.jms.dumper</package>		
+	</camelContext>
+</beans>
