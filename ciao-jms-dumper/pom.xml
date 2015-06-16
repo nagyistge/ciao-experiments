@@ -12,6 +12,10 @@
 		<ciao.core.version>0.0.1-SNAPSHOT</ciao.core.version>
 		<ciao-docs-parser.version>1.0.0-SNAPSHOT</ciao-docs-parser.version>
 		<itk.payloads.version>0.5-SNAPSHOT</itk.payloads.version>
+		
+		<ciao.skipBinArchive>false</ciao.skipBinArchive>
+		<ciao.addClasspath>true</ciao.addClasspath>
+		<ciao.main>uk.nhs.ciao.jms.dumper.JMSDumperApplication</ciao.main>
 	</properties>
 	
 	<dependencies>
@@ -106,16 +110,4 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
-	<build>
-    <plugins>
-      <plugin>
-		  <groupId>org.apache.camel</groupId>
-		  <artifactId>camel-maven-plugin</artifactId>
-		  <configuration>
-		    <mainClass>uk.nhs.ciao.jms.dumper.JMSDumperApplication</mainClass>
-		  </configuration>
-	  </plugin>
-    </plugins>
-  </build>
 </project>
