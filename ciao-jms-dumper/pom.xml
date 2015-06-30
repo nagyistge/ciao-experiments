@@ -25,7 +25,7 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>uk.nhs.interoperability</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>ciao-core</artifactId>
 		</dependency>
 		
@@ -98,7 +98,7 @@
 			</dependency>
 		
 			<dependency>
-				<groupId>uk.nhs.interoperability</groupId>
+				<groupId>${project.groupId}</groupId>
 				<artifactId>ciao-core</artifactId>
 				<version>${ciao.core.version}</version>
 			</dependency>
